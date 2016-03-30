@@ -26,6 +26,9 @@ function startScraper(url) {
     console.log("Starting up...");
     processor = util.getProcessor(url);
     processor.init(url, function(info) {
+
+        //Have to replace '-' with ' ' else server will break.
+        info.name = info.name.replace(/-/g, ' ');
         mangaConfig.dir = info.name.toLowerCase();
         mangaConfig.info = info;
         loadCore(info);
