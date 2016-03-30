@@ -26,7 +26,7 @@ function startScraper(url) {
     console.log("Starting up...");
     processor = util.getProcessor(url);
     processor.init(url, function(info) {
-        mangaConfig.dir = info.name;
+        mangaConfig.dir = info.name.toLowerCase();
         mangaConfig.info = info;
         loadCore(info);
     });
@@ -37,7 +37,7 @@ function startScraper(url) {
  */
 function loadCore(info) {
     makeSureDirExists(mangaConfig.dir);
-    checkForConfig(mangaConfig.dir, info.name);
+    checkForConfig(mangaConfig.dir, info.name.toLowerCase());
     console.log(`Now processign ${mangaConfig.info.name}.`);
     scrapeNextChapter(mangaConfig.lastChapter, false, mangaConfig.lastPage);
 }
@@ -46,7 +46,7 @@ function loadCore(info) {
  *   Saves the current config to a file.
  */
 function saveConfig() {
-    var filePath = mangaConfig.dir + '/' + mangaConfig.info.name + '.json';
+    var filePath = mangaConfig.dir + '/' + mangaConfig.info.name.toLowerCase() + '.json';
     var data = JSON.stringify(mangaConfig);
     fs.writeFileSync(filePath, data);
 }
