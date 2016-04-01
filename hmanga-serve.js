@@ -12,6 +12,8 @@ function startServer() {
         var config = require(`./${dir}/${dir}.json`);
     });
 
+    app.use(express.static('public'));
+
     var listener = app.listen(8080, function(data) {
         var port = listener.address().port
         console.log(`Server on port ${port}`);
