@@ -109,7 +109,7 @@ function scrapeChapter(index, folder, callback, lastPage) {
         //Finished with chapter?
         if (stop) {
             var reachedEnd = (pageIndex === 1) ? true : false
-            if（reachedEnd) {
+            if(reachedEnd) {
                 mangaConfig.lastPage = 0;
             }
             mangaConfig.chapters.push({
