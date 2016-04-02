@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 var util = require('./hmanga-utils');
 var request = require('request');
 var http = require('http');
@@ -82,7 +84,7 @@ function checkForConfig(dir, name) {
 function scrapeNextChapter(lastChapter, reachedEnd, lastPage) {
     if(!reachedEnd) {
         var currentChapter = lastChapter + 1;
-        console.log(`\nGetting chapter ${currentChapter}...`);
+        console.log(`\nGetting ${mangaConfig.info.name} chapter ${currentChapter}...`);
         if(lastPage !== undefined) {
             console.log(`Continuing after page ${lastPage}`);
         }
@@ -168,6 +170,7 @@ function createFolderForChapter(folder, index) {
  *	Downloads an image and saves it at a given path.
  *	Path needs to include filename and ending.
  */
+ //TODO this should have a timeout. So that if connection is lost while download of img started we recover, same in util.tocheerio
 function downloadImage(link, path, callback) {
     var request = http.get(link, function(res) {
         var imagedata = ''
@@ -186,6 +189,11 @@ function downloadImage(link, path, callback) {
             });
         });
 
+    }).on('error', function(e) {
+        console.log('Couldnt get image, will retry...');
+        setTimeout(function() {
+            downloadImage(link, path, callback);
+        }, 1000);
     });
 }
 
