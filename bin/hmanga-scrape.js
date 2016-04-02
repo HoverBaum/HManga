@@ -1,9 +1,8 @@
 #! /usr/bin/env node
 
 var util = require('./hmanga-utils');
-var request = require('request');
-var http = require('http');
 var fs = require('fs');
+var request = require('request');
 var path = require('path');
 
 //Config information for currently handled manga.
@@ -173,29 +172,23 @@ function createFolderForChapter(folder, index) {
  */
  //TODO this should have a timeout. So that if connection is lost while download of img started we recover, same in util.tocheerio
 function downloadImage(link, path, callback) {
-    var request = http.get(link, function(res) {
-        var imagedata = ''
-        res.setEncoding('binary')
-
-        res.on('data', function(chunk) {
-            imagedata += chunk
-        })
-
-        res.on('end', function() {
-
-            //When all data is here, save image at provided path.
-            fs.writeFile(path, imagedata, 'binary', function(err) {
-                if (err) throw err
-                callback();
-            });
-        });
-
-    }).on('error', function(e) {
-        console.log('Couldnt get image, will retry...');
-        setTimeout(function() {
-            downloadImage(link, path, callback);
-        }, 1000);
-    });
+    var timeoutTime = 20000;
+    console.log('Image: ' + link);
+    var start = Date.now();
+    request(link, {timeout: timeoutTime})
+    .on('error', function(e) {
+        var seconds = (Date.now() - start) / 1000;
+        console.log(`Image error after ${seconds}...`);
+        console.log(e);
+        console.log();
+        downloadImage(link, path, callback);
+    })
+    .on('end', function() {
+        var seconds = (Date.now() - start) / 1000;
+        console.log(`Image ${link} in ${seconds}s`);
+        callback();
+    })
+    .pipe(fs.createWriteStream(path));
 }
 
 //The code that is run and uses the input from the user on the commandline.

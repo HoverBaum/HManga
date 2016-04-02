@@ -47,16 +47,23 @@ module.exports = function() {
      *   Does some general error handling and tries to get page again if failing.
      */
     function requestToCheerio(url, callback) {
-        request(url, function(err, resp, body) {
+        console.log('Getting: ' + url);
+        var start = Date.now();
+        var req = request(url, {timeout: 20000}, function(err, resp, body) {
+            var seconds = (Date.now() - start) / 1000;
+
             if (err || resp === undefined) {
                 console.log('error occured, trying again...');
-                setTimeout(requestToCheerio(url, callback), 10000);
+                console.log(err);
+                console.log();
+                setTimeout(requestToCheerio(url, callback), 1000);
                 return;
             }
             if (resp.statusCode !== 200) {
                 callback(false);
                 return;
             }
+            console.log(`Finsished ${url} in ${seconds}s`);
             var $ = cheerio.load(body);
             callback($);
         });
