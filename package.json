@@ -13,7 +13,7 @@
     "devDependencies": {},
     "author": "Hendrik Wallbaum",
     "bin": {
-        "hmanga": "./hmanga.js"
+        "hmanga": "./bin/hmanga.js"
     },
     "license": "MIT"
 }
