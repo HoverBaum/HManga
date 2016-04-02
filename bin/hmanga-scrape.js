@@ -4,6 +4,7 @@ var util = require('./hmanga-utils');
 var request = require('request');
 var http = require('http');
 var fs = require('fs');
+var path = require('path');
 
 //Config information for currently handled manga.
 var mangaConfig = {
@@ -51,7 +52,7 @@ function loadCore(info) {
  *   Saves the current config to a file.
  */
 function saveConfig() {
-    var filePath = mangaConfig.dir + '/' + mangaConfig.info.name.toLowerCase() + '.json';
+    var filePath = path.join(process.cwd(), mangaConfig.dir, mangaConfig.info.name.toLowerCase()) + '.json';
     var data = JSON.stringify(mangaConfig);
     fs.writeFileSync(filePath, data);
 }
@@ -72,7 +73,7 @@ function makeSureDirExists(dir) {
 function checkForConfig(dir, name) {
     var filePath = dir + '/' + name + '.json';
     if (fs.existsSync(filePath)) {
-        mangaConfig = require('./' + filePath);
+        mangaConfig = require(path.join(process.cwd(), filePath));
     } else {
         saveConfig();
     }
