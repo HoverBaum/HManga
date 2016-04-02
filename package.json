@@ -1,19 +1,20 @@
 {
-    "name": "hmanga",
-    "version": "0.1.0",
-    "description": "Commandline interface to download and view mangas.",
-    "main": "hmanga.js",
-    "dependencies": {
-        "cheerio": "^0.20.0",
-        "commander": "^2.9.0",
-        "express": "^4.13.4",
-        "open": "0.0.5",
-        "request": "^2.69.0"
-    },
-    "devDependencies": {},
-    "author": "Hendrik Wallbaum",
-    "bin": {
-        "hmanga": "./bin/hmanga.js"
-    },
-    "license": "MIT"
+  "name": "hmanga",
+  "version": "0.1.0",
+  "description": "Commandline interface to download and view mangas.",
+  "main": "hmanga.js",
+  "dependencies": {
+    "cheerio": "^0.20.0",
+    "commander": "^2.9.0",
+    "express": "^4.13.4",
+    "open": "0.0.5",
+    "request": "^2.69.0",
+    "winston": "^2.2.0"
+  },
+  "devDependencies": {},
+  "author": "Hendrik Wallbaum",
+  "bin": {
+    "hmanga": "./bin/hmanga.js"
+  },
+  "license": "MIT"
 }
