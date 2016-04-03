@@ -173,7 +173,7 @@ function createFolderForChapter(folder, index) {
  */
 function downloadImage(link, path, callback) {
     var timeoutTime = 20000;
-    logger.log('Image: ' + link);
+    logger.debug('Image: ' + link);
     var start = Date.now();
     var request = http.get(link, function(res) {
         var imagedata = ''
@@ -184,18 +184,38 @@ function downloadImage(link, path, callback) {
         });
 
         res.on('end', function() {
+            logger.debug('Got image', {
+                duration: (Date.now() - start) / 1000,
+                url: path,
+                timeoutTime: timeoutTime,
+                mangaConfig: mangaConfig
+            });
             fs.writeFile(path, imagedata, 'binary', function(err) {
-                if (err) throw err
+                if (err) {
+                    logger.error('Could not write to file.', {
+                        error: err,
+                        file: path,
+                        url: path,
+                        mangaConfig: mangaConfig
+                    });
+                }
                 callback();
             });
         });
 
     }).on('error', function(e) {
+        var seconds = (Date.now() - start) / 1000;
+        logger.debug('Error while downloading an image', {
+            duration: (Date.now() - start) / 1000,
+            url: path,
+            error: e,
+            timeoutTime: timeoutTime,
+            mangaConfig: mangaConfig
+        });
         if(e.code === 'ETIMEDOUT') {
             return;
         }
         logger.warn('That went wrong, will try again...');
-        logger.debug(e)
         setTimeout(function() {
             downloadImage(link, path, callback);
         }, 1000);

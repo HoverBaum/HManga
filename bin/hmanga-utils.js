@@ -48,15 +48,20 @@ module.exports = function() {
      *   Does some general error handling and tries to get page again if failing.
      */
     function requestToCheerio(url, callback) {
-        console.log('Getting: ' + url);
+        logger.debug('Getting: ' + url);
         var start = Date.now();
-        var req = request(url, {timeout: 20000}, function(err, resp, body) {
+        var timeoutTime = 20000;
+        var req = request(url, {timeout: timeoutTime}, function(err, resp, body) {
             var seconds = (Date.now() - start) / 1000;
 
             if (err || resp === undefined) {
-                console.log('error occured, trying again...');
-                console.log(err);
-                console.log();
+                console.warn('Trouble getting a website, trying again...');
+                logger.debug(`Error getting page`, {
+                    url: url,
+                    duration: seconds,
+                    timeoutTime: timeoutTime,
+                    error: err
+                });
                 setTimeout(requestToCheerio(url, callback), 1000);
                 return;
             }
@@ -64,7 +69,11 @@ module.exports = function() {
                 callback(false);
                 return;
             }
-            console.log(`Finsished ${url} in ${seconds}s`);
+            logger.debug(`Finsished getting page`, {
+                url: url,
+                duration: seconds,
+                timeoutTime: timeoutTime
+            });
             var $ = cheerio.load(body);
             callback($);
         });

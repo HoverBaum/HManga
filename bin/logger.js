@@ -20,6 +20,10 @@
 var winston = require('winston');
 var path = require('path');
 
+var errorPath = path.join(process.cwd(), 'hmanga-error.log');
+var debugPath = path.join(process.cwd(), 'hmanga-debug.log');
+
+console.log(errorPath);
 //Configure Standard logger.
 winston.loggers.add('standard', {
     console: {
@@ -28,7 +32,7 @@ winston.loggers.add('standard', {
     },
     file: {
         level: 'error',
-        filename: 'hmanga-error'
+        filename: errorPath
     }
 });
 
@@ -40,11 +44,11 @@ winston.loggers.add('debug', {
     },
     file: {
         level: 'silly',
-        filename: 'hmanga-debug'
+        filename:  debugPath
     },
     file: {
         level: 'error',
-        filename: 'hmanga-error'
+        filename:  errorPath
     }
 });
 
