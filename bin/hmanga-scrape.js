@@ -26,7 +26,7 @@ var coreLoaded = false;
  *   Starts to process a url and scrape the associated manga.
  */
 function startScraper(url) {
-    console.log("Starting up...");
+    logger.info('Starting scraper...');
     processor = util.getProcessor(url);
     processor.init(url, function(info) {
 
