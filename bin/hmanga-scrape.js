@@ -2,8 +2,9 @@
 
 var util = require('./hmanga-utils');
 var fs = require('fs');
-var request = require('request');
+var http = require('http');
 var path = require('path');
+var logger = require('./logger');
 
 //Config information for currently handled manga.
 var mangaConfig = {
@@ -82,17 +83,17 @@ function checkForConfig(dir, name) {
  *	Starts the scraping of the next page.
  */
 function scrapeNextChapter(lastChapter, reachedEnd, lastPage) {
-    if(!reachedEnd) {
+    if (!reachedEnd) {
         var currentChapter = lastChapter + 1;
         console.log(`\nGetting ${mangaConfig.info.name} chapter ${currentChapter}...`);
-        if(lastPage !== undefined) {
+        if (lastPage !== undefined) {
             console.log(`Continuing after page ${lastPage}`);
         }
         scrapeChapter(currentChapter, mangaConfig.dir, scrapeNextChapter, lastPage);
         mangaConfig.lastChapter = lastChapter;
         saveConfig();
     }
-    if(reachedEnd) {
+    if (reachedEnd) {
         console.log('\n\nGot all available chapters, enjoy reading.');
     }
 }
@@ -111,7 +112,7 @@ function scrapeChapter(index, folder, callback, lastPage) {
         //Finished with chapter?
         if (stop) {
             var reachedEnd = (pageIndex === 1) ? true : false
-            if(reachedEnd) {
+            if (reachedEnd) {
                 mangaConfig.lastPage = 0;
             }
             mangaConfig.chapters.push({
@@ -170,25 +171,42 @@ function createFolderForChapter(folder, index) {
  *	Downloads an image and saves it at a given path.
  *	Path needs to include filename and ending.
  */
- //TODO this should have a timeout. So that if connection is lost while download of img started we recover, same in util.tocheerio
 function downloadImage(link, path, callback) {
     var timeoutTime = 20000;
-    console.log('Image: ' + link);
+    logger.log('Image: ' + link);
     var start = Date.now();
-    request(link, {timeout: timeoutTime})
-    .on('error', function(e) {
-        var seconds = (Date.now() - start) / 1000;
-        console.log(`Image error after ${seconds}...`);
-        console.log(e);
-        console.log();
-        downloadImage(link, path, callback);
-    })
-    .on('end', function() {
-        var seconds = (Date.now() - start) / 1000;
-        console.log(`Image ${link} in ${seconds}s`);
-        callback();
-    })
-    .pipe(fs.createWriteStream(path));
+    var request = http.get(link, function(res) {
+        var imagedata = ''
+        res.setEncoding('binary');
+
+        res.on('data', function(chunk) {
+            imagedata += chunk
+        });
+
+        res.on('end', function() {
+            fs.writeFile(path, imagedata, 'binary', function(err) {
+                if (err) throw err
+                callback();
+            });
+        });
+
+    }).on('error', function(e) {
+        if(e.code === 'ETIMEDOUT') {
+            return;
+        }
+        logger.warn('That went wrong, will try again...');
+        logger.debug(e)
+        setTimeout(function() {
+            downloadImage(link, path, callback);
+        }, 1000);
+    });
+    request.setTimeout(timeoutTime, function() {
+        logger.warn('This is takeing longer than expected...');
+        setTimeout(function() {
+            downloadImage(link, path, callback);
+        }, 1000);
+    });
+
 }
 
 //The code that is run and uses the input from the user on the commandline.
