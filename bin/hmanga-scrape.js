@@ -44,7 +44,7 @@ function startScraper(url) {
 function loadCore(info) {
     makeSureDirExists(mangaConfig.dir);
     checkForConfig(mangaConfig.dir, info.name.toLowerCase());
-    console.log(`Now processign ${mangaConfig.info.name}.`);
+    logger.info(`Now processign ${mangaConfig.info.name}.`);
     scrapeNextChapter(mangaConfig.lastChapter, false, mangaConfig.lastPage);
 }
 
@@ -85,16 +85,16 @@ function checkForConfig(dir, name) {
 function scrapeNextChapter(lastChapter, reachedEnd, lastPage) {
     if (!reachedEnd) {
         var currentChapter = lastChapter + 1;
-        console.log(`\nGetting ${mangaConfig.info.name} chapter ${currentChapter}...`);
-        if (lastPage !== undefined) {
-            console.log(`Continuing after page ${lastPage}`);
+        logger.info(`\nGetting ${mangaConfig.info.name} chapter ${currentChapter}...`);
+        if (lastPage !== undefined && lastPage !== 0) {
+            logger.info(`Continuing after page ${lastPage}`);
         }
         scrapeChapter(currentChapter, mangaConfig.dir, scrapeNextChapter, lastPage);
         mangaConfig.lastChapter = lastChapter;
         saveConfig();
     }
     if (reachedEnd) {
-        console.log('\n\nGot all available chapters, enjoy reading.');
+        logger.info('\n\nGot all available chapters, enjoy reading.');
     }
 }
 
@@ -144,7 +144,7 @@ function scrapeChapter(index, folder, callback, lastPage) {
             var name = `${mangaConfig.info.name} ch.${index} pg.${pageIndex}`;
             var path = folderForChapter + name + '.jpg';
             downloadImage(url, path, function() {
-                console.log(`Got ch.${index} pg.${pageIndex}`);
+                logger.info(`Got ch.${index} pg.${pageIndex}`);
                 mangaConfig.lastPage = pageIndex;
                 saveConfig();
                 scrapeCallback();
