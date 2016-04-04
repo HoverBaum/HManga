@@ -36,6 +36,7 @@ module.exports = function() {
     }
 
     function scrapeChapterByUrl(url, chapterNumber) {
+        logger.info('Getting single chapter...');
         processor = util.getProcessor(url);
         processor.init(url, function(info) {
 
@@ -236,4 +237,4 @@ module.exports = function() {
         scrapeChapter: scrapeChapterByUrl,
         scrapeUrl: scrapeByUrl
     }
-}
+}();

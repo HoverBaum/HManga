@@ -3,7 +3,7 @@
 var logger = require('./logger');
 var cli = require('commander');
 var scraper = require('./scraper');
-var package = require('../package.json');
+
 /**
  *   Helper function to collect repeated arguments
  */
@@ -16,7 +16,6 @@ function collectChapters(val, all) {
 }
 
 cli
-    .version(package.version)
     .option('-i, --information', 'Updates information saved about mangas')
     .option('-c, --chapter <chapter>', 'Chapter or range of chapters to update', collectChapters, [])
     .option('--debug', 'Enable debugging mode');
@@ -28,7 +27,7 @@ cli.on('--help', function() {
 });
 
 cli.parse(process.argv);
-
+var url = cli.args[0];
 
 if (cli.debug) {
     logger.enableDebug();
@@ -39,5 +38,8 @@ if (cli.information) {
 }
 if (cli.chapter) {
     if (cli.chapter.length === 0) return;
-    logger.info('chapter: ', cli.chapter)
+    cli.chapter.forEach(chapter => {
+        var number = parseInt(chapter);
+        scraper.scrapeChapter(url, number);
+    });
 }
