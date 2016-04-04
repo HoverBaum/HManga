@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 var cli = require('commander');
 var scraper = require('./hmanga-scrape');
 var server = require('./hmanga-serve');

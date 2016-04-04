@@ -23,7 +23,6 @@ var path = require('path');
 var errorPath = path.join(process.cwd(), 'hmanga-error.log');
 var debugPath = path.join(process.cwd(), 'hmanga-debug.log');
 
-console.log(errorPath);
 //Configure Standard logger.
 winston.loggers.add('standard', {
     console: {

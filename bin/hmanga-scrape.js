@@ -85,7 +85,8 @@ function checkForConfig(dir, name) {
 function scrapeNextChapter(lastChapter, reachedEnd, lastPage) {
     if (!reachedEnd) {
         var currentChapter = lastChapter + 1;
-        logger.info(`\nGetting ${mangaConfig.info.name} chapter ${currentChapter}...`);
+        console.log();
+        logger.info(`Getting ${mangaConfig.info.name} chapter ${currentChapter}...`);
         if (lastPage !== undefined && lastPage !== 0) {
             logger.info(`Continuing after page ${lastPage}`);
         }
@@ -175,6 +176,7 @@ function downloadImage(link, path, callback) {
     var timeoutTime = 20000;
     logger.debug('Image: ' + link);
     var start = Date.now();
+    var timedOut = false;
     var request = http.get(link, function(res) {
         var imagedata = ''
         res.setEncoding('binary');
@@ -187,16 +189,14 @@ function downloadImage(link, path, callback) {
             logger.debug('Got image', {
                 duration: (Date.now() - start) / 1000,
                 url: path,
-                timeoutTime: timeoutTime,
-                mangaConfig: mangaConfig
+                timeoutTime: timeoutTime
             });
             fs.writeFile(path, imagedata, 'binary', function(err) {
                 if (err) {
                     logger.error('Could not write to file.', {
                         error: err,
                         file: path,
-                        url: path,
-                        mangaConfig: mangaConfig
+                        url: path
                     });
                 }
                 callback();
@@ -209,22 +209,19 @@ function downloadImage(link, path, callback) {
             duration: (Date.now() - start) / 1000,
             url: path,
             error: e,
-            timeoutTime: timeoutTime,
-            mangaConfig: mangaConfig
+            timeoutTime: timeoutTime
         });
-        if(e.code === 'ETIMEDOUT') {
-            return;
-        }
-        logger.warn('That went wrong, will try again...');
         setTimeout(function() {
             downloadImage(link, path, callback);
         }, 1000);
+        if(!timedOut) {
+            logger.warn('That went wrong, will try again...');
+        }    
     });
     request.setTimeout(timeoutTime, function() {
+        timedOut = true;
         logger.warn('This is takeing longer than expected...');
-        setTimeout(function() {
-            downloadImage(link, path, callback);
-        }, 1000);
+        request.abort();
     });
 
 }

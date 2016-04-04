@@ -55,7 +55,7 @@ module.exports = function() {
             var seconds = (Date.now() - start) / 1000;
 
             if (err || resp === undefined) {
-                console.warn('Trouble getting a website, trying again...');
+                logger.warn('Trouble getting a website, trying again...');
                 logger.debug(`Error getting page`, {
                     url: url,
                     duration: seconds,
