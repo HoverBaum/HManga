@@ -228,8 +228,25 @@ module.exports = function() {
 
         }).on('error', function(e) {
             failed = true;
-            var seconds = (Date.now() - start) / 1000;
-            logger.debug('Error while downloading an image', {
+            if (!timedOut) {
+                logger.debug('Error while downloading an image', {
+                    duration: (Date.now() - start) / 1000,
+                    url: path,
+                    error: e,
+                    timeoutTime: timeoutTime
+                });
+                logger.warn('That went wrong, will try again...');
+                setTimeout(function() {
+                    downloadImage(link, path, callback);
+                }, 1000);
+            }
+        });
+        request.setTimeout(timeoutTime, function() {
+            timedOut = true;
+            failed = true;
+            logger.warn('This is takeing longer than expected...');
+            request.abort();
+            logger.debug('Image download timed out', {
                 duration: (Date.now() - start) / 1000,
                 url: path,
                 error: e,
@@ -238,15 +255,6 @@ module.exports = function() {
             setTimeout(function() {
                 downloadImage(link, path, callback);
             }, 1000);
-            if (!timedOut) {
-                logger.warn('That went wrong, will try again...');
-            }
-        });
-        request.setTimeout(timeoutTime, function() {
-            timedOut = true;
-            failed = true;
-            logger.warn('This is takeing longer than expected...');
-            request.abort();
         });
 
     }
