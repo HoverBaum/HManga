@@ -4,6 +4,8 @@ var http = require('http');
 var path = require('path');
 var logger = require('./logger');
 
+//TODO should get information about chapters somewhere instead of trying to get a page and see if it is there. Can lead to misconception when chapter is not present. Like one piece on mangareader is missing 265
+
 module.exports = function() {
 
     //Config information for currently handled manga.
@@ -35,7 +37,7 @@ module.exports = function() {
         });
     }
 
-    function scrapeChapterByUrl(url, chapterNumber) {
+    function scrapeChapterByUrl(url, chapterNumber, callback) {
         logger.info('Getting single chapter...');
         processor = util.getProcessor(url);
         processor.init(url, function(info) {
@@ -48,7 +50,10 @@ module.exports = function() {
             scrapeChapter(chapterNumber, mangaConfig.dir, chapterCallback, 0);
 
             function chapterCallback() {
-
+                logger.info('Finished scraping chapter ' + chapterNumber);
+                if(callback) {
+                    callback();
+                }
             }
         });
     }
@@ -60,6 +65,15 @@ module.exports = function() {
         makeSureDirExists(mangaConfig.dir);
         checkForConfig(mangaConfig.dir, info.name.toLowerCase());
         logger.info(`Now processing ${mangaConfig.info.name}.`);
+    }
+
+    /**
+     *   Saves the current config to a file.
+     */
+    function saveConfig() {
+        var filePath = path.join(process.cwd(), mangaConfig.dir, mangaConfig.info.name.toLowerCase()) + '.json';
+        var data = JSON.stringify(mangaConfig);
+        fs.writeFileSync(filePath, data);
     }
 
 
@@ -101,6 +115,7 @@ module.exports = function() {
             saveConfig();
         }
         if (reachedEnd) {
+            //TODO should update lastPage in config to 0. Else next time we wonÄt get stuff.
             logger.info('\n\nGot all available chapters, enjoy reading.');
         }
     }
@@ -183,6 +198,7 @@ module.exports = function() {
         logger.debug('Image: ' + link);
         var start = Date.now();
         var timedOut = false;
+        var failed = false;
         var request = http.get(link, function(res) {
             var imagedata = ''
             res.setEncoding('binary');
@@ -192,6 +208,7 @@ module.exports = function() {
             });
 
             res.on('end', function() {
+                if(failed) return;
                 logger.debug('Got image', {
                     duration: (Date.now() - start) / 1000,
                     url: path,
@@ -210,6 +227,7 @@ module.exports = function() {
             });
 
         }).on('error', function(e) {
+            failed = true;
             var seconds = (Date.now() - start) / 1000;
             logger.debug('Error while downloading an image', {
                 duration: (Date.now() - start) / 1000,
@@ -226,6 +244,7 @@ module.exports = function() {
         });
         request.setTimeout(timeoutTime, function() {
             timedOut = true;
+            failed = true;
             logger.warn('This is takeing longer than expected...');
             request.abort();
         });

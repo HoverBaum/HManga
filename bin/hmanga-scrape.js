@@ -28,6 +28,7 @@ cli.on('--help', function() {
 
 cli.parse(process.argv);
 var url = cli.args[0];
+logger.info('Starting up...');
 
 if (cli.debug) {
     logger.enableDebug();
@@ -36,10 +37,22 @@ if (cli.debug) {
 if (cli.information) {
     logger.error('Sorry, information updating is not implemented yet.');
 }
-if (cli.chapter) {
-    if (cli.chapter.length === 0) return;
-    cli.chapter.forEach(chapter => {
-        var number = parseInt(chapter);
-        scraper.scrapeChapter(url, number);
-    });
+
+if (cli.chapter.length !== 0) {
+    logger.info('Getting Chapters...');
+    var index = -1;
+    function nextChapter() {
+        index += 1;
+        if(cli.chapter[index]) {
+            var number = parseInt(cli.chapter[index]);
+            scraper.scrapeChapter(url, number, nextChapter);
+        } else {
+            logger.log('Finished all requested chapters');
+        }
+    }
+    nextChapter();
+}
+
+if(!cli.information && cli.chapter.length === 0) {
+    scraper.scrapeUrl(url);
 }
