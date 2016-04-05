@@ -249,7 +249,7 @@ module.exports = function() {
             logger.debug('Image download timed out', {
                 duration: (Date.now() - start) / 1000,
                 url: path,
-                error: e,
+                error: 'TIMEOUT',
                 timeoutTime: timeoutTime
             });
             setTimeout(function() {
