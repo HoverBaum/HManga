@@ -37,18 +37,22 @@ winston.loggers.add('standard', {
 
 //Configure Debug logger.
 winston.loggers.add('debug', {
-    console: {
-        level: 'debug',
-        colorize: true
-    },
-    file: {
-        level: 'silly',
-        filename:  debugPath
-    },
-    file: {
-        level: 'error',
-        filename:  errorPath
-    }
+    transports: [
+        new(winston.transports.Console)({
+            level: 'debug',
+            colorize: true
+        }),
+        new(winston.transports.File)({
+            name: 'debug-file',
+            filename: 'hmanga-debug.log',
+            level: 'silly'
+        }),
+        new(winston.transports.File)({
+            name: 'error-file',
+            filename: 'hmanga-error.log',
+            level: 'error'
+        })
+    ]
 });
 
 module.exports = function createLogger() {
