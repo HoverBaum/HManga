@@ -115,7 +115,8 @@ module.exports = function() {
             saveConfig();
         }
         if (reachedEnd) {
-            //TODO should update lastPage in config to 0. Else next time we wonÄt get stuff.
+            mangaConfig.lastPage = 0;
+            saveConfig();
             logger.info('\n\nGot all available chapters, enjoy reading.');
         }
     }
