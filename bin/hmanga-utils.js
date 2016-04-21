@@ -1,100 +1,106 @@
+/**
+ *   Provides utility functions for hManga.
+ *
+ *   @module hmanga-utils
+ */
+
 var request = require('request');
 var cheerio = require('cheerio');
 var logger = require('./logger');
 
+
+
 /**
- *   Utility functions for HManga and processors.
+ *   Returns the domain contained within a URL.
+ *   @param {string} url    The URL from which to extract the domain.
  */
-module.exports = function() {
+exports.getDomainFromURL = function extractDomainFromURL(url) {
+    var domain = url.replace('www.', '');
+    domain = domain.replace('http://', '');
+    domain = domain.replace('https://', '');
+    domain = domain.split('/')[0];
+    return domain;
+}
 
-    /**
-     *   Returns the domain contained within a URL.
-     */
-    function extractDomainFromURL(url) {
-        var domain = url.replace('www.', '');
-        domain = domain.replace('http://', '');
-        domain = domain.replace('https://', '');
-        domain = domain.split('/')[0];
-        return domain;
+/**
+ *   Creates an initial info object with basic parameters set.
+ *   @param {string} url    URL for which to create stub.
+ */
+exports.initialInfoObject = function createNewInfoObject(url) {
+    var domain = exports.getDomainFromURL(url);
+    var secure = checkIfHttps(url);
+    var info = {
+        domain: domain,
+        secure: secure,
+        name: undefined
     }
+    return info;
+}
 
-    /**
-     *   Creates an initial info object with basic parameters set.
-     */
-    function createNewInfoObject(url) {
-        var domain = extractDomainFromURL(url);
-        var secure = checkIfHttps(url);
-        var info = {
-            domain: domain,
-            secure: secure,
-            name: undefined
-        }
-        return info;
+/**
+ *   Checks if a URL contains 'https'.
+ *   @param {string} url    URL to checkIfHttps
+ *   @returns {boolean} If the URL uses https.
+ *   @private
+ */
+function checkIfHttps(url) {
+    if (url.indexOf('https') > -1) {
+        return true;
+    } else {
+        return false;
     }
+}
 
-    /**
-     *   Checks if a URL contains 'https'.
-     */
-    function checkIfHttps(url) {
-        if (url.indexOf('https') > -1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+/**
+ *   Request a URL and returns a cheerio object.
+ *   Does some general error handling and tries to get page again if failing.
+ *
+ *   @param {string} url    The URL to get.
+ *   @param {function}      callback The callback which will be called
+ *    with the cheerio object.
+ */
+exports.getCheerio = function requestToCheerio(url, callback) {
+    logger.debug('Getting: ' + url);
+    var start = Date.now();
+    var timeoutTime = 20000;
+    var req = request(url, {
+        timeout: timeoutTime
+    }, function(err, resp, body) {
+        var seconds = (Date.now() - start) / 1000;
 
-    /**
-     *   Request a URL and returns a cheerio object.
-     *   Does some general error handling and tries to get page again if failing.
-     */
-    function requestToCheerio(url, callback) {
-        logger.debug('Getting: ' + url);
-        var start = Date.now();
-        var timeoutTime = 20000;
-        var req = request(url, {timeout: timeoutTime}, function(err, resp, body) {
-            var seconds = (Date.now() - start) / 1000;
-
-            if (err || resp === undefined) {
-                logger.warn('Trouble getting a website, trying again...');
-                logger.debug(`Error getting page`, {
-                    url: url,
-                    duration: seconds,
-                    timeoutTime: timeoutTime,
-                    error: err
-                });
-                setTimeout(requestToCheerio(url, callback), 1000);
-                return;
-            }
-            if (resp.statusCode !== 200) {
-                callback(false);
-                return;
-            }
-            logger.debug(`Finsished getting page`, {
+        if (err || resp === undefined) {
+            logger.warn('Trouble getting a website, trying again...');
+            logger.debug(`Error getting page`, {
                 url: url,
                 duration: seconds,
-                timeoutTime: timeoutTime
+                timeoutTime: timeoutTime,
+                error: err
             });
-            var $ = cheerio.load(body);
-            callback($);
+            setTimeout(requestToCheerio(url, callback), 1000);
+            return;
+        }
+        if (resp.statusCode !== 200) {
+            callback(false);
+            return;
+        }
+        logger.debug(`Finsished getting page`, {
+            url: url,
+            duration: seconds,
+            timeoutTime: timeoutTime
         });
-    }
+        var $ = cheerio.load(body);
+        callback($);
+    });
+}
 
-    /**
-    *   Returns a processor that can handle the given URL.
-    */
-    function findProcessorForUrl(url) {
-        var hoster = extractDomainFromURL(url);
-        var moduleId = './hmanga-' + hoster.replace('.', '-'); //TODO Check for named an direct.
-        var processor = require(moduleId);
-        return processor;
-    }
-
-    //Export interface.
-    return {
-        getDomainFromURL: extractDomainFromURL,
-        initialInfoObject: createNewInfoObject,
-        getCheerio: requestToCheerio,
-        getProcessor: findProcessorForUrl
-    }
-
-}();
+/**
+ *   Returns a processor that can handle the given URL.
+ *   @param {string} url    URL for which to find a processor.
+ *   @returns A processor for the URL.
+ */
+exports.getProcessor = function findProcessorForUrl(url) {
+    var hoster = exports.getDomainFromURL(url);
+    var moduleId = './hmanga-' + hoster.replace('.', '-'); //TODO Check for named an direct.
+    var processor = require(moduleId);
+    return processor;
+}
