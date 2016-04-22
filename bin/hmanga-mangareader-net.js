@@ -63,6 +63,16 @@ module.exports = function() {
                     }
                 }
 
+                //Ongoing?
+                if (propertytitle === 'Status:') {
+                    if (!this.next.next.children[0]) {
+                        return;
+                    }
+                    var status = this.next.next.children[0].data;
+                    var ongoing = status ? true : false;
+                    info.ongoing = ongoing;
+                }
+
                 //Release Year
                 if (propertytitle === 'Year of Release:') {
                     if (!this.next.next.children[0]) {
@@ -72,7 +82,32 @@ module.exports = function() {
                     info.releaseYear = releaseYear;
                 }
             });
-            callbackAfterInit(info);
+
+            //Chapters
+            var lastChapterReleased = 0;
+            var chapters = [];
+            $('#listing tr').each(function() {
+                var link = $(this).find('td a');
+                if (link.length === 0) return;
+                var parts = link.html().split(' ');
+                var number = parseInt(parts[parts.length - 1]);
+                var dateString = $(this).find('td:last-of-type').html();
+                var date = Date.parse(dateString);
+                chapters.push({
+                    pages: null,
+                    scraped: null,
+                    chapter: number,
+                    released: date
+                });
+                if (number > lastChapterReleased) {
+                    lastChapterReleased = number;
+                }
+            });
+            info.chapters = chapters;
+            info.totalChapters = chapters.length;
+            info.lastChapterReleased = lastChapterReleased;
+
+            //callbackAfterInit(info);
         });
     }
 
@@ -98,7 +133,7 @@ module.exports = function() {
                 return;
             }
             var img = $('#img')[0];
-            if(img === undefined) {
+            if (img === undefined) {
 
                 //Reached the End of all chapters.
                 callback(false);
