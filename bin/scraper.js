@@ -72,6 +72,7 @@ exports.scrapeChapter = function scrapeChapterByUrl(url, chapterNumber, callback
 /**
  *   Loads some core features of the scraper.
  *   @param {MangaInfo} info    Info object for the current manga.
+ *   @private
  */
 function loadCore(info) {
     makeSureDirExists(mangaConfig.dir);
@@ -92,6 +93,7 @@ function saveConfig() {
 
 /**
  *   Creates a directory if it does not exist.
+ *   @param {string} dir    Path to a file or directory to ensure.
  *   @private
  */
 function makeSureDirExists(dir) {
@@ -103,6 +105,8 @@ function makeSureDirExists(dir) {
 /**
  *   Checks if there is a config file in a directory.
  *   Creates an initial one if not.
+ *   @param {string} dir    Dir in which to check.
+ *   @param {string} name   Name of config so search for.
  *   @private
  */
 function checkForConfig(dir, name) {
@@ -116,6 +120,9 @@ function checkForConfig(dir, name) {
 
 /**
  *	Starts the scraping of the next page.
+ *	@param {number} lastChapter  The last Chapter which was processed.
+ *	@param {boolean} reachedEnd  If we have reached the end.
+ *	@param {number} lastPage     The number of the page crawled last.
  *	@private
  */
 function scrapeNextChapter(lastChapter, reachedEnd, lastPage) {
