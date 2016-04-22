@@ -4,9 +4,6 @@ var http = require('http');
 var path = require('path');
 var logger = require('./logger');
 
-//TODO should get information about chapters somewhere instead of trying to get a page and see if it is there. Can lead to misconception when chapter is not present. Like one piece on mangareader is missing 265
-
-
 //Config information for currently handled manga.
 var mangaConfig = {
     info: null,
@@ -33,6 +30,7 @@ exports.scrapeUrl = function scrapeByUrl(url) {
     processor.init(url, function(info) {
 
         //Have to replace '-' with ' ' else server will break.
+        //NEXT Info should be basis for mangaConfig, getting merged with what we have saved.
         info.name = info.name.replace(/-/g, ' ');
         mangaConfig.dir = info.name.toLowerCase();
         mangaConfig.info = info;
