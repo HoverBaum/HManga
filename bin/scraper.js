@@ -6,11 +6,7 @@ var logger = require('./logger');
 
 //Config information for currently handled manga.
 var mangaConfig = {
-    info: null,
-    lastChapter: 0,
-    lastPage: 0,
-    dir: null,
-    chapters: []
+    dir: null
 };
 
 //The processor we are using.

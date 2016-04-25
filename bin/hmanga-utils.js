@@ -30,8 +30,12 @@ exports.initialInfoObject = function createNewInfoObject(url) {
     var domain = exports.getDomainFromURL(url);
     var secure = checkIfHttps(url);
     var info = {
-        domain: domain,
-        secure: secure,
+        hosts: [
+            {
+                domain: domain,
+                secure: secure
+            }
+        ],        
         name: undefined
     }
     return info;

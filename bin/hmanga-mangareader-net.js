@@ -21,7 +21,7 @@ module.exports = function() {
         callbackAfterInit = callback;
         info = util.initialInfoObject(url);
         baseURL = createBaseUrl(url);
-        info.infoPage = baseURL;
+        info.hosts[0].infoPage = baseURL;
         getMoreInfos(baseURL);
     }
 
