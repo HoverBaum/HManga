@@ -94,8 +94,9 @@ module.exports = function() {
                 var dateString = $(this).find('td:last-of-type').html();
                 var date = Date.parse(dateString);
                 chapters.push({
-                    pages: null,
-                    scraped: null,
+                    pages: [],
+                    finished: false,
+                    totalPages: null,
                     chapter: number,
                     released: date
                 });
@@ -107,7 +108,7 @@ module.exports = function() {
             info.totalChapters = chapters.length;
             info.lastChapterReleased = lastChapterReleased;
 
-            //callbackAfterInit(info);
+            callbackAfterInit(info);
         });
     }
 
