@@ -35,7 +35,7 @@ exports.initialInfoObject = function createNewInfoObject(url) {
                 domain: domain,
                 secure: secure
             }
-        ],        
+        ],
         name: undefined
     }
     return info;
@@ -107,4 +107,15 @@ exports.getProcessor = function findProcessorForUrl(url) {
     var moduleId = './hmanga-' + hoster.replace('.', '-'); //TODO Check for named an direct.
     var processor = require(moduleId);
     return processor;
+}
+
+
+/**
+ *   Creates a directory if it does not exist.
+ *   @param {string} dir    Path to a file or directory to ensure.
+ */
+exports.ensureDir = function makeSureDirExists(dir) {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
 }
