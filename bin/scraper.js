@@ -3,10 +3,11 @@ var fs = require('fs');
 var http = require('http');
 var path = require('path');
 var logger = require('./logger');
+var merger = require('./merger');
 
 //Config information for currently handled manga.
 var mangaConfig = {
-    dir: null
+
 };
 
 //The processor we are using.
@@ -27,11 +28,11 @@ exports.scrapeUrl = function scrapeByUrl(url) {
 
         //Have to replace '-' with ' ' else server will break.
         //NEXT Info should be basis for mangaConfig, getting merged with what we have saved.
+        info.dir = info.name.toLowerCase();
         info.name = info.name.replace(/-/g, ' ');
-        mangaConfig.dir = info.name.toLowerCase();
-        mangaConfig.info = info;
-        loadCore(info);
-        scrapeNextChapter(mangaConfig.lastChapter, false, mangaConfig.lastPage);
+        loadCore(info, function(info) {
+            scrapeNextChapter(mangaConfig.lastChapter, false, mangaConfig.lastPage);
+        });
     });
 }
 
@@ -68,10 +69,13 @@ exports.scrapeChapter = function scrapeChapterByUrl(url, chapterNumber, callback
  *   @param {MangaInfo} info    Info object for the current manga.
  *   @private
  */
-function loadCore(info) {
-    makeSureDirExists(mangaConfig.dir);
-    checkForConfig(mangaConfig.dir, info.name.toLowerCase());
-    logger.info(`Now processing ${mangaConfig.info.name}.`);
+function loadCore(info, callback) {
+    mangaConfig = info;
+    makeSureDirExists(info.dir);
+    checkForConfig(info, function(info) {
+        logger.info(`Now processing ${info.name}.`);
+        callback(info);
+    });
 }
 
 /**
@@ -79,7 +83,7 @@ function loadCore(info) {
  *   @private
  */
 function saveConfig() {
-    var filePath = path.join(process.cwd(), mangaConfig.dir, mangaConfig.info.name.toLowerCase()) + '.json';
+    var filePath = path.join(process.cwd(), mangaConfig.dir, mangaConfig.name.toLowerCase()) + '.json';
     var data = JSON.stringify(mangaConfig);
     fs.writeFileSync(filePath, data);
 }
@@ -103,13 +107,15 @@ function makeSureDirExists(dir) {
  *   @param {string} name   Name of config so search for.
  *   @private
  */
-function checkForConfig(dir, name) {
-    var filePath = dir + '/' + name + '.json';
+function checkForConfig(info, callback) {
+    var filePath = info.dir + '/' + info.name.toLowerCase() + '.json';
+    var loadedConfig = {};
     if (fs.existsSync(filePath)) {
-        mangaConfig = require(path.join(process.cwd(), filePath));
-    } else {
-        saveConfig();
+        loadedConfig = require(path.join(process.cwd(), filePath));
     }
+    var mergedInfo = merger(loadedConfig, info);
+    saveConfig();
+    callback(mergedInfo);
 }
 
 /**

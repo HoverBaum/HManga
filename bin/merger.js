@@ -6,7 +6,6 @@
  */
 
 module.exports = function merge(loaded, parsed) {
-
     loaded = mergeBasics(loaded, parsed);
     loaded = mergeHosts(loaded, parsed);
     loaded = mergeGenres(loaded, parsed);
@@ -38,11 +37,16 @@ function computeValues(loaded) {
  *   @return {[type]}        [description]
  */
 function mergeChapters(loaded, parsed) {
+    if(!loaded.chapters) {
+        loaded.chapters = [];
+    }
+
+    //Push all chapters we are not already tracking into loaded.
     parsed.chapters.forEach(parsedChapter => {
         if(loaded.chapters.every(function(chapter) {
             return parsedChapter.chapter !== chapter.chapter;
         })) {
-            loaded.chapters.push(chapter);
+            loaded.chapters.push(parsedChapter);
         }
     });
     return loaded;
@@ -55,6 +59,11 @@ function mergeChapters(loaded, parsed) {
  *   @return {[type]}        [description]
  */
 function mergeGenres(loaded, parsed) {
+    if(!loaded.genres) {
+        loaded.genres = [];
+    }
+
+    //Push all genres we are not aware of into loaded.
     parsed.genres.forEach(loadedGenre => {
         if(!(loaded.genres.indexOf(loadedGenre) > -1)) {
             loaded.genres.push(loadedGenre);
@@ -70,6 +79,11 @@ function mergeGenres(loaded, parsed) {
  *   @return {[type]}        [description]
  */
 function mergeHosts(loaded, parsed) {
+    if(!loaded.hosts) {
+        loaded.hosts = [];
+    }
+
+    //Push all hosts we don't know of inot loaded.
     parsed.hosts.forEach(loadedHost => {
         if(loaded.hosts.every(function(host) {
             return host.domain !== loadedHost.domain;
@@ -86,8 +100,8 @@ function mergeHosts(loaded, parsed) {
  *   @param  {[type]} parsed [description]
  *   @return {[type]}        [description]
  */
-mergeBasics(loaded, parsed) {
-    loaded.name = parsed.name:
+function mergeBasics(loaded, parsed) {
+    loaded.name = parsed.name;
     loaded.ongoing = parsed.ongoing;
     loaded.rightToLeft = parsed.rightToLeft;
     return loaded;
