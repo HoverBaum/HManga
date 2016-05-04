@@ -3,12 +3,13 @@ var logger = require('./logger');
 var http = require('http');
 
 module.exports.download = function downloadImageFromUrl(url, page, path) {
+    logger.debug(`Getting image from ${url}`);
     var timeoutTime = 20000;
     logger.debug('Image: ' + link);
     var start = Date.now();
     var timedOut = false;
     var failed = false;
-    var request = http.get(link, function(res) {
+    var request = http.get(url, function(res) {
         var imagedata = ''
         res.setEncoding('binary');
 
@@ -20,7 +21,7 @@ module.exports.download = function downloadImageFromUrl(url, page, path) {
             if (failed) return;
             logger.debug('Got image', {
                 duration: (Date.now() - start) / 1000,
-                url: path,
+                url: url,
                 timeoutTime: timeoutTime
             });
             fs.writeFile(path, imagedata, 'binary', function(err) {
@@ -40,7 +41,7 @@ module.exports.download = function downloadImageFromUrl(url, page, path) {
         if (!timedOut) {
             logger.debug('Error while downloading an image', {
                 duration: (Date.now() - start) / 1000,
-                url: path,
+                url: url,
                 error: e,
                 timeoutTime: timeoutTime
             });
@@ -57,7 +58,7 @@ module.exports.download = function downloadImageFromUrl(url, page, path) {
         request.abort();
         logger.debug('Image download timed out', {
             duration: (Date.now() - start) / 1000,
-            url: path,
+            url: url,
             error: 'TIMEOUT',
             timeoutTime: timeoutTime
         });

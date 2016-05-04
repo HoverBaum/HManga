@@ -78,15 +78,32 @@ function startScraper(info) {
 }
 
 function scrapeChapter(chapter, info) {
-    logger.debug(`Now scraping chapter ${chapter.chapter}`, chapter);
     if(chapter.finished) {
         XIN.emit('chapter-finished', chapter.chapter, info);
         return;
     }
-    //NEXT we don't know the number of pages yet.....
+    //FIXME this is done every time. Probably not loading config right.
+    if(chapter.totalPages === null) {
+        logger.info(`Getting infos about chapter ${chapter.chapter}`);
+        processor.getChapterPages(chapter.chapter);
+        XIN.subscribe('chapter-pages').consume(chapter.chapter, function(pageCount) {
+            for(var i = 1; i <= pageCount; i++) {
+                chapter.pages.push({
+                    page: i,
+                    finished: false,
+                    ignore: false
+                });
+            }
+            chapter.totalPages = pageCount;
+            XIN.emit('config-changed', info);
+            scrapeChapter(chapter, info);
+        });
+        return;
+    }
+    logger.info(`Now scraping chapter ${chapter.chapter}`);
     chapter.pages.forEach(page => {
         if(!page.finished) {
-            downloadPage(chapter.cahpter, page.page);
+            downloadPage(chapter.chapter, page.page, info);
             XIN.subscribe('page-downloaded').consume(page.page, function() {
                 page.finished = true;
                 XIN.emit('config-changed', info);
@@ -109,8 +126,8 @@ function checkChapterFinished(chapter, info) {
 function downloadPage(chapter, page, info) {
     logger.info(`Getting page ${page} for chapter ${chapter} of ${info.name}`);
     /*processor.getImgURL(chapter, page, function(url) {
-        var path = path.join(`${config.dir}`, `${info.name} chp.${chapter} pg.${page}`);
-        imgLoader.download(url, page, path);
+        var filePath = path.join(`${info.dir}`, `${info.name} chp.${chapter} pg.${page}`);
+        imgLoader.download(url, page, filePath);
     });*/
 }
 

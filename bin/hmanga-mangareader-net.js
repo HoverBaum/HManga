@@ -1,4 +1,5 @@
 var util = require('./hmanga-utils');
+var XIN = require('./moderator');
 
 /**
  *   HManga Processor for mangareader.net.
@@ -145,10 +146,27 @@ module.exports = function() {
         });
     }
 
+    /**
+     *   Returns the number of pages in a given chapter.
+     *   @param  {number} chapterNumber - Number of chapter.
+     *   @return {number} The number of pages in this chapter.
+     */
+    function getChapterPages(chapterNumber) {
+        var url = `${baseURL}/${chapterNumber}`;
+        var pageCount = 0;
+        util.getCheerio(url, function($) {
+            var elm = $('#selectpage').html();
+            var numberString = /\s[1-9]+$/g.exec(elm)[0];
+            pageCount = parseInt(numberString);
+            XIN.emit('chapter-pages', chapterNumber, pageCount);
+        });
+    }
+
     //Return the interface.
     return {
         init: initializeProcessor,
-        getImgURL: generateURLForImage
+        getImgURL: generateURLForImage,
+        getChapterPages: getChapterPages
     }
 
 }();
