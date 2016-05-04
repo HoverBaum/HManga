@@ -42,7 +42,7 @@ module.exports.subscribe = function(channel, callback) {
         channels.set(channel, []);
         channelEvents.set(channel, new Map());
         consumers.set(channel, new Map());
-        emit('xin', 'newChannel', channel);
+        module.exports.emit('xin', 'newChannel', channel);
     }
 
     //Save the new callback.

@@ -7,6 +7,7 @@
 var request = require('request');
 var cheerio = require('cheerio');
 var logger = require('./logger');
+var fs = require('fs');
 
 
 
@@ -73,7 +74,7 @@ exports.getCheerio = function requestToCheerio(url, callback) {
         var seconds = (Date.now() - start) / 1000;
 
         if (err || resp === undefined) {
-            logger.warn('Trouble getting a website, trying again...');
+            //logger.warn('Trouble getting a website, trying again...');
             logger.debug(`Error getting page`, {
                 url: url,
                 duration: seconds,

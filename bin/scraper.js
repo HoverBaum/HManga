@@ -45,15 +45,18 @@ function initialize(info) {
         loadedConfig = require(path.join(process.cwd(), info.config));
     }
     var mergedInfo = merger(loadedConfig, info);
+    logger.debug('Initialization finished');
     XIN.emit('config-changed', info);
     XIN.emit('initialized', info);
 }
 
 function saveConfig(info) {
-    fs.writeFile(info.config, info);
+    logger.debug('Saving config');
+    fs.writeFile(info.config, JSON.stringify(info));
 }
 
 function startScraper(info) {
+    logger.info(`Starting scraper for ${info.name}`);
     if(info.chapters.every(chapter => {
         return chapter.finsihed
     })) {
@@ -62,10 +65,12 @@ function startScraper(info) {
     }
     var finishedChapters = 0;
     info.chapters.forEach(chapter => {
-        if(chapter.finished && finishedChapters === chapter.chapter - 1) {
+        var previous = chapter.chapter - 1;
+        if(chapter.finished && finishedChapters === previous) {
+            console.log(chapter.chapter);
             finishedChapters = chapter.chapter;
         }
-        XIN.subscribe('chapter-finished').consume(chapter.chapter - 1, function() {
+        XIN.subscribe('chapter-finished').consume(previous, function() {
             scrapeChapter(chapter, info);
         });
     });
@@ -73,10 +78,12 @@ function startScraper(info) {
 }
 
 function scrapeChapter(chapter, info) {
+    logger.debug(`Now scraping chapter ${chapter.chapter}`, chapter);
     if(chapter.finished) {
         XIN.emit('chapter-finished', chapter.chapter, info);
         return;
     }
+    //NEXT we don't know the number of pages yet.....
     chapter.pages.forEach(page => {
         if(!page.finished) {
             downloadPage(chapter.cahpter, page.page);
@@ -100,17 +107,22 @@ function checkChapterFinished(chapter, info) {
 }
 
 function downloadPage(chapter, page, info) {
-    processor.getImgURL(chapter, page, function(url) {
+    logger.info(`Getting page ${page} for chapter ${chapter} of ${info.name}`);
+    /*processor.getImgURL(chapter, page, function(url) {
         var path = path.join(`${config.dir}`, `${info.name} chp.${chapter} pg.${page}`);
         imgLoader.download(url, page, path);
-    });
+    });*/
 }
 
 function checkFinish(chapter, info) {
-    if(chapter.chapter === info.lastChapterReleased) {
+    if(chapter === info.lastChapterReleased) {
         XIN.emit('finished-scraping', info);
     }
 }
+
+XIN.subscribe('chapter-finished', function(chapter) {
+    logger.info(`Finished chapter ${chapter}`);
+});
 
 XIN.subscribe('chapter-finished', checkFinish);
 XIN.subscribe('config-changed', saveConfig);

@@ -107,7 +107,7 @@ module.exports = function() {
             info.chapters = chapters;
             info.totalChapters = chapters.length;
             info.lastChapterReleased = lastChapterReleased;
-            
+
             callbackAfterInit(info);
         });
     }
