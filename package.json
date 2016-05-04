@@ -11,10 +11,16 @@
     "request": "^2.69.0",
     "winston": "^2.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "docdash": "^0.3.0",
+    "tape": "^4.5.1"
+  },
   "author": "Hendrik Wallbaum",
   "bin": {
     "hmanga": "./bin/hmanga.js"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+      "test": "node test/test.js"
+  }
 }
