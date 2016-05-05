@@ -1,0 +1,66 @@
+{
+    "hosts": [{
+        "domain": "mangareader.net",
+        "secure": false,
+        "infoPage": "http://www.mangareader.net/tales-of-demons-and-gods"
+    }],
+    "name": "Tales of Demons and Gods",
+    "genres": ["Action", "Adventure", "Fantasy", "Martial Arts", "Romance", "Shounen", "some more"],
+    "ongoing": true,
+    "rightToLeft": true,
+    "chapters": [{
+        "pages": [{
+            "page": 1,
+            "finished": false,
+            "ignore": false
+        }, {
+            "page": 2,
+            "finished": false,
+            "ignore": false
+        }, {
+            "page": 3,
+            "finished": false,
+            "ignore": false
+        }, {
+            "page": 4,
+            "finished": false,
+            "ignore": false
+        }],
+        "finished": false,
+        "totalPages": 4,
+        "chapter": 1,
+        "released": 1441123200000
+    }, {
+        "pages": [{
+            "page": 1,
+            "finished": true,
+            "ignore": false
+        }, {
+            "page": 2,
+            "finished": true,
+            "ignore": false
+        }, {
+            "page": 3,
+            "finished": true,
+            "ignore": false
+        }, {
+            "page": 4,
+            "finished": true,
+            "ignore": false
+        }],
+        "finished": true,
+        "totalPages": 4,
+        "chapter": 2,
+        "released": 1441123200000
+    }, {
+        "pages": [],
+        "finished": false,
+        "totalPages": null,
+        "chapter": 3,
+        "released": 1441123200000
+    }],
+    "totalChapters": 3,
+    "lastChapterReleased": 3,
+    "dir": "tales of demons and gods",
+    "config": "tales of demons and gods\\tales-of-demons-and-gods.json"
+}
