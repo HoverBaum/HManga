@@ -27,7 +27,6 @@ exports.scrapeUrl = function scrapeByUrl(url) {
     processor.init(url, function(info) {
 
         //Have to replace '-' with ' ' else server will break.
-        //NEXT Info should be basis for mangaConfig, getting merged with what we have saved.
         info.dir = info.name.toLowerCase();
         info.name = info.name.replace(/-/g, ' ');
         loadCore(info, function(info) {

@@ -1,11 +1,13 @@
 var XIN = require('./moderator');
 var logger = require('./logger');
 var http = require('http');
+var fs = require('fs');
 
 module.exports.download = function downloadImageFromUrl(url, page, path) {
-    logger.debug(`Getting image from ${url}`);
+    var filePath = path + '.jpg';
+    logger.silly(`Getting image from ${url}`);
     var timeoutTime = 20000;
-    logger.debug('Image: ' + link);
+    logger.debug('Image: ' + url);
     var start = Date.now();
     var timedOut = false;
     var failed = false;
@@ -24,15 +26,15 @@ module.exports.download = function downloadImageFromUrl(url, page, path) {
                 url: url,
                 timeoutTime: timeoutTime
             });
-            fs.writeFile(path, imagedata, 'binary', function(err) {
+            fs.writeFile(filePath, imagedata, 'binary', function(err) {
                 if (err) {
                     logger.error('Could not write to file.', {
                         error: err,
-                        file: path,
-                        url: path
+                        file: filePath,
+                        url: url
                     });
                 }
-                XIN.emit('page-downloaded', page);
+                XIN.emit('page-downloaded', page, path);
             });
         });
 
@@ -47,7 +49,7 @@ module.exports.download = function downloadImageFromUrl(url, page, path) {
             });
             logger.warn('That went wrong, will try again...');
             setTimeout(function() {
-                module.exports.download(link, path, callback);
+                module.exports.download(url, page, path);
             }, 1000);
         }
     });
@@ -63,7 +65,7 @@ module.exports.download = function downloadImageFromUrl(url, page, path) {
             timeoutTime: timeoutTime
         });
         setTimeout(function() {
-            module.exports.download(link, path, callback);
+            module.exports.download(url, page, path);
         }, 1000);
     });
 

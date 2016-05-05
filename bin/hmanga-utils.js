@@ -81,7 +81,9 @@ exports.getCheerio = function requestToCheerio(url, callback) {
                 timeoutTime: timeoutTime,
                 error: err
             });
-            setTimeout(requestToCheerio(url, callback), 1000);
+            setTimeout(function() {
+                requestToCheerio(url, callback)
+            }, 1000);
             return;
         }
         if (resp.statusCode !== 200) {

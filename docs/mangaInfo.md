@@ -23,6 +23,7 @@ Documentation of how an information object should look.
                 page: number
                 finished: boolean
                 ignore: false
+                file: string
             ]
             finished: boolean
             totalPages: number (null for no info)

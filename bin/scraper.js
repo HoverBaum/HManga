@@ -6,8 +6,11 @@ var logger = require('./logger');
 var merger = require('./merger');
 var util = require('./hmanga-utils.js');
 var XIN = require('./moderator');
+var imgLoader = require('./imgLoader');
 
 var processor = null;
+
+//NEXT better logging.
 
 /**
  *   Scrape the manga associated with a give url.
@@ -37,21 +40,21 @@ exports.scrapeChapter = function scrapeChapterByUrl(url, chapterNumber, callback
 
 function initialize(info) {
     info.dir = info.name.toLowerCase();
-    info.name = info.name.replace(/-/g, ' ');
-    info.config = path.join(info.dir, info.name.toLowerCase().replace(/\s/g, '-')) + '.json';
     util.ensureDir(info.dir);
     var loadedConfig = {};
     if (fs.existsSync(info.config)) {
         loadedConfig = require(path.join(process.cwd(), info.config));
     }
     var mergedInfo = merger(loadedConfig, info);
+    mergedInfo.dir = mergedInfo.name.toLowerCase();
+    mergedInfo.config = path.join(mergedInfo.dir, mergedInfo.name.toLowerCase().replace(/\s/g, '-')) + '.json';
     logger.debug('Initialization finished');
-    XIN.emit('config-changed', info);
-    XIN.emit('initialized', info);
+    XIN.emit('config-changed', mergedInfo);
+    XIN.emit('initialized', mergedInfo);
 }
 
 function saveConfig(info) {
-    logger.debug('Saving config');
+    logger.debug('Saving config to ' + info.config);
     fs.writeFile(info.config, JSON.stringify(info));
 }
 
@@ -91,7 +94,8 @@ function scrapeChapter(chapter, info) {
                 chapter.pages.push({
                     page: i,
                     finished: false,
-                    ignore: false
+                    ignore: false,
+                    file: null
                 });
             }
             chapter.totalPages = pageCount;
@@ -104,7 +108,9 @@ function scrapeChapter(chapter, info) {
     chapter.pages.forEach(page => {
         if(!page.finished) {
             downloadPage(chapter.chapter, page.page, info);
-            XIN.subscribe('page-downloaded').consume(page.page, function() {
+            XIN.subscribe('page-downloaded').consume(page.page, function(path) {
+                page.file = path;
+                logger.info(`Finished chapter ${chapter.chapter} page ${page.page}`);
                 page.finished = true;
                 XIN.emit('config-changed', info);
                 checkChapterFinished(chapter, info);
@@ -124,11 +130,11 @@ function checkChapterFinished(chapter, info) {
 }
 
 function downloadPage(chapter, page, info) {
-    logger.info(`Getting page ${page} for chapter ${chapter} of ${info.name}`);
-    /*processor.getImgURL(chapter, page, function(url) {
+    logger.info(`Getting chapter ${chapter} page ${page} of ${info.name}`);
+    processor.getImgURL(chapter, page, function(url) {
         var filePath = path.join(`${info.dir}`, `${info.name} chp.${chapter} pg.${page}`);
         imgLoader.download(url, page, filePath);
-    });*/
+    });
 }
 
 function checkFinish(chapter, info) {
