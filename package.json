@@ -8,6 +8,7 @@
     "commander": "^2.9.0",
     "express": "^4.13.4",
     "open": "0.0.5",
+    "progress": "^1.1.8",
     "request": "^2.69.0",
     "winston": "^2.2.0"
   },
@@ -21,6 +22,6 @@
   },
   "license": "MIT",
   "scripts": {
-      "test": "node test/test.js"
+    "test": "node test/test.js"
   }
 }

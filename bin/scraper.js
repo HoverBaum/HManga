@@ -7,6 +7,7 @@ var merger = require('./merger');
 var util = require('./hmanga-utils.js');
 var XIN = require('./moderator');
 var imgLoader = require('./imgLoader');
+var ProgressBar = require('progress');
 
 var processor = null;
 
@@ -104,13 +105,17 @@ function scrapeChapter(chapter, info) {
         });
         return;
     }
-    logger.info(`Now scraping chapter ${chapter.chapter}`);
+    var bar = new ProgressBar(`Downloading chapter ${chapter.chapter} |:bar| :percent`, {
+        total: chapter.totalPages,
+        width: 20,
+        incomplete: ' '
+    });
     chapter.pages.forEach(page => {
         if(!page.finished) {
             downloadPage(chapter.chapter, page.page, info);
             XIN.subscribe('page-downloaded').consume(page.page, function(path) {
+                bar.tick();
                 page.file = path;
-                logger.info(`Finished chapter ${chapter.chapter} page ${page.page}`);
                 page.finished = true;
                 XIN.emit('config-changed', info);
                 checkChapterFinished(chapter, info);
@@ -130,7 +135,6 @@ function checkChapterFinished(chapter, info) {
 }
 
 function downloadPage(chapter, page, info) {
-    logger.info(`Getting chapter ${chapter} page ${page} of ${info.name}`);
     processor.getImgURL(chapter, page, function(url) {
         var filePath = path.join(`${info.dir}`, `${info.name} chp.${chapter} pg.${page}`);
         imgLoader.download(url, page, filePath);
@@ -142,10 +146,6 @@ function checkFinish(chapter, info) {
         XIN.emit('finished-scraping', info);
     }
 }
-
-XIN.subscribe('chapter-finished', function(chapter) {
-    logger.info(`Finished chapter ${chapter}`);
-});
 
 XIN.subscribe('chapter-finished', checkFinish);
 XIN.subscribe('config-changed', saveConfig);
