@@ -120,7 +120,7 @@ function downloadChapterPages(chapter, info) {
 function getChapterInfo(chapter, info) {
     processor.getChapterPages(chapter.chapter);
     var total = 10;
-    var infoBar = new ProgressBar(`Getting information for chapter ${chapter.chapter} (:bar)`, {
+    var infoBar = new ProgressBar(`Getting information for chapter ${chapter.chapter}/${info.lastChapterReleased} (:bar)`, {
         total: total,
         complete: '*',
         incomplete: ' '
@@ -207,8 +207,28 @@ function checkFinish(chapter, info) {
 }
 
 function finishUp(info) {
+    console.log(' ');
     logger.info(`Finished scraping "${info.name}"`);
+    var missing = findMissingChapters(info);
+    if(missing.length > 0) {
+        logger.warn(`${missing.length} of ${info.lastChapterReleased} chapters ${(missing.length === 1) ? 'is' : 'are'} missing!`);
+        missing.forEach(missed => {
+            logger.warn(`chapter ${missed}`);
+        })
+    }
     logger.info(`Start reading with "hmanga serve"`);
+}
+
+function findMissingChapters(info) {
+    var missing = [];
+    for(var i = 1; i <= info.lastChapterReleased; i++) {
+        if(info.chapters.every(chapter => {
+            return chapter.chapter !== i;
+        })) {
+            missing.push(i);
+        }
+    }
+    return missing;
 }
 
 XIN.subscribe('chapter-finished', checkFinish);
