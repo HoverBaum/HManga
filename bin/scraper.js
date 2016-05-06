@@ -67,7 +67,7 @@ function saveConfig(info) {
 }
 
 function startScraper(info) {
-    logger.info(`Starting scraper for: ${info.name}`);
+    logger.info(`Starting scraper for "${info.name}"`);
     if(info.chapters.every(chapter => {
         return chapter.finished;
     })) {
@@ -75,14 +75,16 @@ function startScraper(info) {
         return;
     }
     var finishedChapters = 0;
+    var lastChapter = 0;
     info.chapters.forEach(chapter => {
-        var previous = chapter.chapter - 1;
+        var previous = lastChapter;
         if(chapter.finished && finishedChapters === previous) {
             finishedChapters = chapter.chapter;
         }
         XIN.subscribe('chapter-finished').consume(previous, function() {
             scrapeChapter(chapter, info);
         });
+        lastChapter = chapter.chapter;
     });
     XIN.emit('chapter-finished', finishedChapters, info);
 }
@@ -204,6 +206,12 @@ function checkFinish(chapter, info) {
     }
 }
 
+function finishUp(info) {
+    logger.info(`Finished scraping "${info.name}"`);
+    logger.info(`Start reading with "hmanga serve"`);
+}
+
 XIN.subscribe('chapter-finished', checkFinish);
 XIN.subscribe('config-changed', saveConfig);
 XIN.subscribe('processor-loaded', initialize);
+XIN.subscribe('finished-scraping', finishUp)
