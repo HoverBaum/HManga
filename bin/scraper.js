@@ -19,6 +19,9 @@ var ProgressBar = require('progress');
 
 var processor = null;
 
+//TODO should factor handling of config out of this. to make it more modular
+// Also put logging to the user out of here so when we do different things like update all local mangas we don't get unwanted logs.
+
 /**
  *   Scrape the manga associated with a give url.
  *
