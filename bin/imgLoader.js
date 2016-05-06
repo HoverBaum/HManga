@@ -47,7 +47,7 @@ module.exports.download = function downloadImageFromUrl(url, page, path) {
                 error: e,
                 timeoutTime: timeoutTime
             });
-            logger.warn('That went wrong, will try again...');
+            logger.debug('That went wrong, will try again...');
             setTimeout(function() {
                 module.exports.download(url, page, path);
             }, 1000);
@@ -56,7 +56,7 @@ module.exports.download = function downloadImageFromUrl(url, page, path) {
     request.setTimeout(timeoutTime, function() {
         timedOut = true;
         failed = true;
-        logger.warn('This is takeing longer than expected...');
+        logger.debug('This is takeing longer than expected...');
         request.abort();
         logger.debug('Image download timed out', {
             duration: (Date.now() - start) / 1000,

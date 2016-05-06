@@ -1,3 +1,11 @@
+/**
+ *   MOdule to do the scraping.
+ *
+ *   @module
+ *   @alias HManga/scraper
+ */
+
+
 var util = require('./hmanga-utils');
 var fs = require('fs');
 var http = require('http');
@@ -11,8 +19,6 @@ var ProgressBar = require('progress');
 
 var processor = null;
 
-//NEXT better logging.
-
 /**
  *   Scrape the manga associated with a give url.
  *
@@ -23,8 +29,8 @@ exports.scrapeUrl = function scrapeByUrl(url) {
     processor.init(url, function(info) {
         XIN.emit('processor-loaded', info);
     });
-    XIN.subscribe('initialized', function(info) {
-        startScraper(info);
+    XIN.subscribe('initialized', function(mergedInfo) {
+        startScraper(mergedInfo);
     });
 }
 
@@ -42,6 +48,7 @@ exports.scrapeChapter = function scrapeChapterByUrl(url, chapterNumber, callback
 function initialize(info) {
     info.dir = info.name.toLowerCase();
     util.ensureDir(info.dir);
+    info.config = path.join(info.dir, info.name.toLowerCase().replace(/\s/g, '-')) + '.json';
     var loadedConfig = {};
     if (fs.existsSync(info.config)) {
         loadedConfig = require(path.join(process.cwd(), info.config));
@@ -60,9 +67,9 @@ function saveConfig(info) {
 }
 
 function startScraper(info) {
-    logger.info(`Starting scraper for ${info.name}`);
+    logger.info(`Starting scraper for: ${info.name}`);
     if(info.chapters.every(chapter => {
-        return chapter.finsihed
+        return chapter.finished;
     })) {
         XIN.emit('finished-scraping', info);
         return;
@@ -71,7 +78,6 @@ function startScraper(info) {
     info.chapters.forEach(chapter => {
         var previous = chapter.chapter - 1;
         if(chapter.finished && finishedChapters === previous) {
-            console.log(chapter.chapter);
             finishedChapters = chapter.chapter;
         }
         XIN.subscribe('chapter-finished').consume(previous, function() {
@@ -86,35 +92,20 @@ function scrapeChapter(chapter, info) {
         XIN.emit('chapter-finished', chapter.chapter, info);
         return;
     }
-    //FIXME this is done every time. Probably not loading config right.
     if(chapter.totalPages === null) {
-        logger.info(`Getting infos about chapter ${chapter.chapter}`);
-        processor.getChapterPages(chapter.chapter);
-        XIN.subscribe('chapter-pages').consume(chapter.chapter, function(pageCount) {
-            for(var i = 1; i <= pageCount; i++) {
-                chapter.pages.push({
-                    page: i,
-                    finished: false,
-                    ignore: false,
-                    file: null
-                });
-            }
-            chapter.totalPages = pageCount;
-            XIN.emit('config-changed', info);
-            scrapeChapter(chapter, info);
-        });
+        getChapterInfo(chapter, info);
         return;
+    } else {
+        downloadChapterPages(chapter, info);
     }
-    var bar = new ProgressBar(`Downloading chapter ${chapter.chapter} |:bar| :percent`, {
-        total: chapter.totalPages,
-        width: 20,
-        incomplete: ' '
-    });
+}
+
+function downloadChapterPages(chapter, info) {
+    startChapterProgress(chapter);
     chapter.pages.forEach(page => {
         if(!page.finished) {
             downloadPage(chapter.chapter, page.page, info);
             XIN.subscribe('page-downloaded').consume(page.page, function(path) {
-                bar.tick();
                 page.file = path;
                 page.finished = true;
                 XIN.emit('config-changed', info);
@@ -122,6 +113,72 @@ function scrapeChapter(chapter, info) {
             });
         }
     });
+}
+
+function getChapterInfo(chapter, info) {
+    processor.getChapterPages(chapter.chapter);
+    var total = 10;
+    var infoBar = new ProgressBar(`Getting information for chapter ${chapter.chapter} (:bar)`, {
+        total: total,
+        complete: '*',
+        incomplete: ' '
+    });
+    var forward = true;
+    var timer = setInterval(function() {
+        if(forward) {
+            infoBar.tick();
+            if(infoBar.curr > 8) forward = false;
+        } else {
+            infoBar.tick(-1);
+            if(infoBar.curr < 1) forward = true;
+        }
+    }, 200);
+    XIN.subscribe('chapter-pages').consume(chapter.chapter, function(pageCount) {
+        for(var i = 1; i <= pageCount; i++) {
+            chapter.pages.push({
+                page: i,
+                finished: false,
+                ignore: false,
+                file: null
+            });
+        }
+        clearInterval(timer);
+        infoBar.tick(total - infoBar.curr);
+        XIN.emit('chapter-info', chapter.chapter, chapter);
+        chapter.totalPages = pageCount;
+        XIN.emit('config-changed', info);
+        downloadChapterPages(chapter, info);
+    });
+}
+
+/**
+ *   Start a progress bar for a chapter.
+ *   We assume each page to be a step.
+ *   @param  {chapter} chapter [description]
+ */
+function startChapterProgress(chapter) {
+    var bar = new ProgressBar(`Downloading chapter ${chapter.chapter} |:bar| :percent`, {
+        total: chapter.totalPages,
+        width: 20,
+        incomplete: ' '
+    });
+
+    //Tick bar for each page.
+    chapter.pages.forEach(page => {
+        if(page.finished) {
+            bar.tick();
+        } else {
+            XIN.subscribe('page-downloaded').consume(page.page, function() {
+                bar.tick();
+            });
+        }
+    });
+
+    //Tick the bar forward and back to make it show up faster.
+    if(bar.curr < chapter.totalPages - 1) {
+        bar.tick();
+        bar.tick(-1);
+    }
 }
 
 function checkChapterFinished(chapter, info) {

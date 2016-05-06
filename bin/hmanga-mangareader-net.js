@@ -156,7 +156,7 @@ module.exports = function() {
         var pageCount = 0;
         util.getCheerio(url, function($) {
             var elm = $('#selectpage').html();
-            var numberString = /\s[1-9]+$/g.exec(elm)[0];
+            var numberString = /\s[0-9]+$/g.exec(elm)[0];
             pageCount = parseInt(numberString);
             XIN.emit('chapter-pages', chapterNumber, pageCount);
         });
