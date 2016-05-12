@@ -6,18 +6,18 @@ import {amber500, amber700, grey600, fullWhite} from 'material-ui/styles/colors'
 import {fade} from 'material-ui/utils/colorManipulator';
 
 const muiTheme = getMuiTheme({
-  palette: {
-    primary1Color: amber500,
-    primary2Color: amber700,
-    primary3Color: grey600,
-    textColor: fullWhite,
-    alternateTextColor: '#303030',
-    canvasColor: '#303030',
-    borderColor: fade(fullWhite, 0.3),
-    disabledColor: fade(fullWhite, 0.3),
-    pickerHeaderColor: fade(fullWhite, 0.12),
-    clockCircleColor: fade(fullWhite, 0.12)
-  }
+	fontFamily: 'Roboto, sans-serif',
+  	palette: {
+    	primary1Color: amber500,
+    	primary2Color: amber700,
+    	primary3Color: grey600,
+    	alternateTextColor: '#303030',
+    	canvasColor: '#303030',
+    	borderColor: fade(fullWhite, 0.3),
+    	disabledColor: fade(fullWhite, 0.3),
+    	pickerHeaderColor: fade(fullWhite, 0.12),
+    	clockCircleColor: fade(fullWhite, 0.12)
+  	}
 });
 
 import Home from './home';

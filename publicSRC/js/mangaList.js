@@ -1,14 +1,39 @@
 import React from 'react';
 import {Link} from 'react-router';
+import {List, ListItem} from 'material-ui/List';
 
-const Home = () => (
+var mangas = [
+	{
+		name: 'The Gamer'
+	},
+	{
+		name: 'Tales of Demons and Gods'
+	}
+]
 
-	<div>
-    	Liste der Mangas
+export default class MangaList extends React.Component{
 
-		<Link to="/manga/aManga">link</Link>
-	</div>
+	createMangaDisplay(mangas) {
+		var rows = mangas.map(manga => {
+			let toLink = `/manga/${manga.name}`;
+            return (
+				<ListItem primaryText={<Link to={toLink}>{manga.name}</Link>} />
+			)
+        });
+        return rows;
+	}
 
-);
+	render() {
+		let mangaRows = mangas.map
+		return (
+			<div>
+			
+				<List className="mangaList">
+					{this.createMangaDisplay(mangas)}
+		    	</List>
 
-export default Home;
+
+			</div>
+		)
+	}
+}
