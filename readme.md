@@ -1,3 +1,10 @@
+## UNDER DEVELOPMENT
+
+Status:
+[x] scraper
+[ ] static mock for serving
+[ ] serving local mangas
+
 ## Usage
 
 To download a manga run `hmanga <url to manga>`. This will download the manga into a sub-folder of the current directory. You can specify any url associated with a manga. Leaving the url blank will instead look for updates to all previously downloaded mangas.
