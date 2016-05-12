@@ -17,17 +17,21 @@ export default class MangaList extends React.Component{
 		var rows = mangas.map(manga => {
 			let toLink = `/manga/${manga.name}`;
             return (
-				<ListItem primaryText={<Link to={toLink}>{manga.name}</Link>} />
+				<ListItem onClick={this.handleSelect} primaryText={<Link to={toLink}>{manga.name}</Link>} />
 			)
         });
         return rows;
+	}
+
+	handleSelect = (e) => {
+		e.target.children[0].click();
 	}
 
 	render() {
 		let mangaRows = mangas.map
 		return (
 			<div>
-			
+
 				<List className="mangaList">
 					{this.createMangaDisplay(mangas)}
 		    	</List>
