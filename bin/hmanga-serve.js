@@ -13,4 +13,8 @@ cli.on('--help', function() {
     console.log('    https://github.com/HoverBaum/HManga');
 });
 
+if (cli.debug) {
+    logger.enableDebug();
+}
+
 startServer();
