@@ -4,10 +4,6 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {amber500, amber700, grey600, fullWhite} from 'material-ui/styles/colors';
 import {fade} from 'material-ui/utils/colorManipulator';
-import HManga from './hmanga';
-
-var injectTapEventPlugin = require("react-tap-event-plugin");
-injectTapEventPlugin();
 
 const muiTheme = getMuiTheme({
   palette: {
@@ -24,10 +20,21 @@ const muiTheme = getMuiTheme({
   }
 });
 
+import Home from './home';
+import Manga from './manga';
+import { Router, Route, hashHistory } from 'react-router';
+
+var injectTapEventPlugin = require("react-tap-event-plugin");
+injectTapEventPlugin();
+
+
 const App = () => (
-  <MuiThemeProvider muiTheme={muiTheme}>
-    <HManga />
-  </MuiThemeProvider>
+	<MuiThemeProvider muiTheme={muiTheme}>
+	<Router history={hashHistory}>
+	    <Route path="/" component={Home}/>
+		<Route path="/manga/:mangaName" component={Manga}/>
+	</Router>
+	</MuiThemeProvider>
 );
 
 ReactDOM.render(
