@@ -1,16 +1,22 @@
 import React from 'react';
 import AppBar from 'material-ui/AppBar';
 import Helper from './helper';
+import DetailInfo from './detailInfo';
 
-var mangaInfo = {};
-Helper.get('/testManga.json', function(data) {
-	mangaInfo = JSON.parse(data);
-	console.log('change ' + mangaInfo.name);
-});
+export default class Manga extends React.Component{
 
-export default class Home extends React.Component{
+	constructor(props) {
+        super(props);
+        this.state = {
+			manga: {}
+		};
+		Helper.get('/testManga.json', function(data) {
+			this.setState({
+				manga: JSON.parse(data)
+			});
+		});
 
-	//NEXT hier weiter. das holen im constructor und dann ein untermodul.
+    }
 
 	render() {
 		let {mangaName} = this.props.params;
