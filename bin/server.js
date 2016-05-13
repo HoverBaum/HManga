@@ -1,4 +1,5 @@
 var generateMangaList = require('./server/mangaList');
+var getMangaInfo = require('./server/mangaInfo');
 
 function startServer() {
     var express = require('express');
@@ -8,6 +9,10 @@ function startServer() {
 		generateMangaList(function(list) {
 			res.status(200).json(list).end();
 		});
+	});
+
+	app.get('API/manga/:name', function(req, res) {
+		var name = req.params.name;
 	});
 
     app.get('api/manga/:manga', function(req, res) {

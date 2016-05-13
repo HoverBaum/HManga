@@ -12,12 +12,12 @@ export default class Manga extends React.Component{
 		};
 		var that = this;
 		let {mangaName} = this.props.params;
-		Helper.get('/API/' + mangaName, function(data) {
+		Helper.get('API/manga/' + mangaName, function(data) {
 			that.setState({
 				manga: data
 			});
 		});
- 
+
     }
 
 	render() {
