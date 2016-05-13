@@ -1,3 +1,9 @@
+/**
+ *   Display of a single page.
+ *   Takes care of the image and navigational things.
+ *   Fires events when user navigates.
+ */
+
 import React from 'react';
 
 export default class Page extends React.Component{
