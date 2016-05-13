@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import {Card, CardActions, CardTitle, CardText} from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -51,7 +51,7 @@ export default class DetailInfo extends React.Component{
 				opacity: (chapter.finished) ? '1' : '0.7'
 			}
 			function clickHandler() {
-				router.push(`/manga/${manga.name}/${chapter.chapter}/1`);
+				router.push(`/manga/${manga.name}/${chapter.chapter}`);
 			}
 			return (
 				<ListItem primaryText={`Chapter ${chapter.chapter}`} disabled={!chapter.finished} style={elementStyle} onTouchTap={clickHandler} />

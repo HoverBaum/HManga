@@ -22,6 +22,7 @@ const muiTheme = getMuiTheme({
 
 import Home from './home';
 import Manga from './manga';
+import Chapter from './chapter';
 import { Router, Route, hashHistory } from 'react-router';
 
 var injectTapEventPlugin = require("react-tap-event-plugin");
@@ -32,7 +33,10 @@ const App = () => (
 	<MuiThemeProvider muiTheme={muiTheme}>
 	<Router history={hashHistory}>
 	    <Route path="/" component={Home}/>
-		<Route path="/manga/:mangaName" component={Manga}/>
+		<Route path="/manga/:mangaName" component={Manga}>
+			<Route path=":mangaName"
+			<Route path="/manga/:mangaName/:chapter" component={Chapter} />
+		</Route>
 	</Router>
 	</MuiThemeProvider>
 );
