@@ -10,8 +10,9 @@ export default class Manga extends React.Component{
         this.state = {
 			manga: {}
 		};
+		var that = this;
 		Helper.get('/testManga.json', function(data) {
-			this.setState({
+			that.setState({
 				manga: JSON.parse(data)
 			});
 		});

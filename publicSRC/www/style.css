@@ -13,3 +13,11 @@ body {
 	color: #fff;
 	text-decoration: none;
 }
+
+.detail-card {
+	color: #fff;
+	width: 80%;
+	margin: 0 auto;
+	margin-top: 2rem;
+	margin-bottom: 1rem;
+}

@@ -1,6 +1,9 @@
 var util = require('./hmanga-utils');
 var XIN = require('./moderator');
 
+//TODO add missing chapters to info 
+//TODO add description to info
+
 /**
  *   HManga Processor for mangareader.net.
  */
