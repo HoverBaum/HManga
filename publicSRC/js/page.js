@@ -28,7 +28,7 @@ export default class Page extends React.Component{
 		return (
 			<div>
 
-			    <img src={this.props.src} className="single-page" />
+			    <img src={this.props.src} className="single-page" onClick={this.props.onNextPage} />
 
 			</div>
 		)
