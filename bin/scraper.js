@@ -51,14 +51,14 @@ exports.scrapeChapter = function scrapeChapterByUrl(url, chapterNumber, callback
 function initialize(info) {
     info.dir = info.name.toLowerCase();
     util.ensureDir(info.dir);
-    info.config = path.join(info.dir, info.name.toLowerCase().replace(/\s/g, '-')) + '.json';
+    info.config = path.join(info.dir, 'hmanga') + '.json';
     var loadedConfig = {};
     if (fs.existsSync(info.config)) {
         loadedConfig = require(path.join(process.cwd(), info.config));
     }
     var mergedInfo = merger(loadedConfig, info);
     mergedInfo.dir = mergedInfo.name.toLowerCase();
-    mergedInfo.config = path.join(mergedInfo.dir, mergedInfo.name.toLowerCase().replace(/\s/g, '-')) + '.json';
+    mergedInfo.config = path.join(mergedInfo.dir, 'hmanga') + '.json';
     logger.debug('Initialization finished');
     XIN.emit('config-changed', mergedInfo);
     XIN.emit('initialized', mergedInfo);

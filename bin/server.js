@@ -1,3 +1,5 @@
+var generateMangaList = require('./server/mangaList');
+
 function startServer() {
     var express = require('express');
     var app = express();
@@ -33,16 +35,7 @@ function startServer() {
         }
     });
 
-	function generateMangaList() {
-		return [
-			{
-				name: 'the manga'
-			},
-			{
-				name: 'the other manga'
-			}
-		]
-	}
+
 
     function checkForImage(dir, chapter, page) {
         try {
