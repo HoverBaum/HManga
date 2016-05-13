@@ -1,5 +1,6 @@
 var generateMangaList = require('./server/mangaList');
 var getMangaInfo = require('./server/mangaInfo');
+var fs = require('fs');
 
 function startServer() {
     var express = require('express');
@@ -16,6 +17,28 @@ function startServer() {
 		getMangaInfo(name, function(manga) {
 			res.json(manga).end();
 		})
+	});
+
+	app.get('/API/manga/:name/:chapter', function(req, res) {
+		var chapterNumber = parseInt(req.params.chapter);
+		var name = req.params.name;
+		getMangaInfo(name, function(manga) {
+			var returnChapter = {};
+			manga.chapters.forEach(chapter => {
+				if(chapter.chapter === chapterNumber) {
+					returnChapter = chapter;
+				}
+			});
+			res.json(returnChapter).end();
+		})
+	});
+
+	app.get('/API/page/:file', function(req, res) {
+		var file = req.params.file;
+		fs.readFile(file, function(err, rawData) {
+			var base64 = rawData.toString('base64');
+			res.send(base64).end();
+		});
 	});
 
     app.get('api/manga/:manga', function(req, res) {

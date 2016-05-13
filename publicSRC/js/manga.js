@@ -7,11 +7,14 @@ export default class Manga extends React.Component{
 
 	constructor(props) {
         super(props);
+		let {mangaName} = this.props.params;
         this.state = {
-			manga: {}
+			manga: {
+				name: ''
+			}
 		};
 		var that = this;
-		let {mangaName} = this.props.params;
+
 		Helper.get('/API/manga/' + mangaName, function(data) {
 			that.setState({
 				manga: JSON.parse(data)

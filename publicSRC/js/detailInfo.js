@@ -51,7 +51,7 @@ export default class DetailInfo extends React.Component{
 				opacity: (chapter.finished) ? '1' : '0.7'
 			}
 			function clickHandler() {
-				router.push(`/manga/${manga.name}/${chapter.chapter}`);
+				router.push(`/manga/${manga.urlName}/${chapter.chapter}`);
 			}
 			return (
 				<ListItem primaryText={`Chapter ${chapter.chapter}`} disabled={!chapter.finished} style={elementStyle} onTouchTap={clickHandler} />
