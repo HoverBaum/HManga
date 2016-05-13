@@ -4,10 +4,13 @@ import Page from './page';
 import Helper from './helper';
 import LinearProgress from 'material-ui/LinearProgress';
 
+var router = null;
+
 export default class Chapter extends React.Component{
 
-	constructor(props) {
+	constructor(props, context) {
 		super(props);
+		router = context.router;
 		this.state = {
 			page: 1,
 			pages: [],
@@ -58,7 +61,9 @@ export default class Chapter extends React.Component{
 	}
 
 	nextChapter = () => {
-		//TODO trigger next chapter.
+		let {chapter, mangaName} = this.props.params;
+		window.location.hash = `#/manga/${mangaName}/${this.state.chapter.chapter + 1}`;
+		window.location.reload();
 	}
 
 	prevPage = () => {
