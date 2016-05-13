@@ -28,11 +28,26 @@ export default class Chapter extends React.Component{
 	}
 
 	nextPage = () => {
+		if(!this.state.chapter.totalPages) return;
+		let page = this.state.page;
+		page =+ 1;
+		if(page > this.state.chapter.totalPages) {
+			this.nextChapter();
+		} else {
+			this.setState({page: page});
+		}
+	}
 
+	nextChapter = () => {
+		//TODO trigger next chapter.
 	}
 
 	prevPage = () => {
-
+		let page = this.state.page;
+		if(page > 1) {
+			page -= 1;
+			this.setState({page: page});
+		}
 	}
 
 	render() {
