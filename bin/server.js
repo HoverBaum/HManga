@@ -2,7 +2,12 @@ function startServer() {
     var express = require('express');
     var app = express();
 
-    app.get('/manga/:manga', function(req, res) {
+	app.get('/API/allMangas', function(req, res) {
+		var list = generateMangaList();
+		res.status(200).json(list).end();
+	});
+
+    app.get('api/manga/:manga', function(req, res) {
         var dir = req.params.manga.replace(/-/g, ' ');
         try {
             var config = require(`./${dir}/${dir}.json`);
@@ -12,7 +17,7 @@ function startServer() {
         }
     });
 
-    app.get('/manga/:manga/:chapter/:page', function(req, res) {
+    app.get('api/manga/:manga/:chapter/:page', function(req, res) {
         var dir = req.params.manga.replace(/-/g, ' ');
         var chapter = req.params.chapter;
         var page = req.params.page;
@@ -27,6 +32,17 @@ function startServer() {
             res.send('Problem handling coming soon ;)');
         }
     });
+
+	function generateMangaList() {
+		return [
+			{
+				name: 'the manga'
+			},
+			{
+				name: 'the other manga'
+			}
+		]
+	}
 
     function checkForImage(dir, chapter, page) {
         try {
@@ -54,7 +70,7 @@ function startServer() {
         }
     }
 
-    app.use(express.static('public'));
+    app.use(express.static(__dirname + '/../public'));
 
     var listener = app.listen(8080, function(data) {
         var port = listener.address().port

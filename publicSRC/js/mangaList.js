@@ -1,17 +1,23 @@
 import React from 'react';
 import {Link} from 'react-router';
 import {List, ListItem} from 'material-ui/List';
-
-var mangas = [
-	{
-		name: 'The Gamer'
-	},
-	{
-		name: 'Tales of Demons and Gods'
-	}
-]
+import Helper from './helper';
 
 export default class MangaList extends React.Component{
+
+	constructor(props) {
+        super(props);
+        this.state = {
+			mangas: []
+		};
+		var that = this;
+		Helper.get('/API/allMangas', function(data) {
+			that.setState({
+				mangas: JSON.parse(data)
+			});
+		});
+
+    }
 
 	createMangaDisplay(mangas) {
 		var rows = mangas.map(manga => {
@@ -28,14 +34,12 @@ export default class MangaList extends React.Component{
 	}
 
 	render() {
-		let mangaRows = mangas.map
 		return (
 			<div>
 
 				<List className="mangaList">
-					{this.createMangaDisplay(mangas)}
+					{this.createMangaDisplay(this.state.mangas)}
 		    	</List>
-
 
 			</div>
 		)

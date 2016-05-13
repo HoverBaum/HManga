@@ -2,7 +2,7 @@
 
 Status:
 [x] scraper
-[ ] static mock for serving
+[x] static mock for serving
 [ ] serving local mangas
 
 ## Usage
