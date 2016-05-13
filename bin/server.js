@@ -11,8 +11,11 @@ function startServer() {
 		});
 	});
 
-	app.get('API/manga/:name', function(req, res) {
+	app.get('/API/manga/:name', function(req, res) {
 		var name = req.params.name;
+		getMangaInfo(name, function(manga) {
+			res.json(manga).end();
+		})
 	});
 
     app.get('api/manga/:manga', function(req, res) {

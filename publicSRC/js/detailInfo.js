@@ -83,10 +83,10 @@ export default class DetailInfo extends React.Component{
 						<Divider />
 						<List>
 							<Subheader>Publication status</Subheader>
-					      	<ListItem primaryText={'Last chapter: ' + this.props.manga.lastChapterReleased}  />
-					      	<ListItem primaryText={'Chapters available: ' + this.props.manga.totalChapters} />
-					      	<ListItem primaryText={'Offline available: ' + this.calculateOffline(this.props.manga)}  />
-					      	<ListItem primaryText={(this.props.manga.ongoing) ? 'ongoing' : 'finsihed'}  />
+					      	<ListItem disabled={true} primaryText={'Last chapter: ' + this.props.manga.lastChapterReleased}  />
+					      	<ListItem disabled={true} primaryText={'Chapters available: ' + this.props.manga.totalChapters} />
+					      	<ListItem disabled={true} primaryText={'Offline available: ' + this.calculateOffline(this.props.manga)}  />
+					      	<ListItem disabled={true} primaryText={(this.props.manga.ongoing) ? 'ongoing' : 'finsihed'}  />
 					    </List>
 	    			</CardText>
 	    			<CardActions>

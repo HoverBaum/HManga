@@ -12,21 +12,19 @@ export default class Manga extends React.Component{
 		};
 		var that = this;
 		let {mangaName} = this.props.params;
-		Helper.get('API/manga/' + mangaName, function(data) {
+		Helper.get('/API/manga/' + mangaName, function(data) {
 			that.setState({
-				manga: data
+				manga: JSON.parse(data)
 			});
 		});
 
     }
 
 	render() {
-		let {mangaName} = this.props.params;
-		let appBarTitle = 'HManga Reader - ' + mangaName;
 		return (
 			<div>
 
-			    <AppBar title={appBarTitle} />
+			    <AppBar title={'HManga Reader - ' + this.state.manga.name} />
 
 				<DetailInfo manga={this.state.manga} />
 

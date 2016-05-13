@@ -27,6 +27,7 @@ function computeValues(loaded) {
         }
     });
     loaded.lastChapterReleased = lastChapter;
+	loaded.urlName = loaded.name.replace(/\s/g, '-').toLowerCase();
     return loaded;
 }
 
