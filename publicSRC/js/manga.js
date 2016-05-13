@@ -20,8 +20,7 @@ export default class Manga extends React.Component{
     }
 
 	render() {
-		let {mangaName} = this.props.params;
-		let appBarTitle = 'HManga Reader - ' + mangaName;
+		let appBarTitle = 'HManga Reader - ';
 		return (
 			<div>
 

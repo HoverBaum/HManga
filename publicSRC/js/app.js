@@ -33,10 +33,8 @@ const App = () => (
 	<MuiThemeProvider muiTheme={muiTheme}>
 	<Router history={hashHistory}>
 	    <Route path="/" component={Home}/>
-		<Route path="/manga/:mangaName" component={Manga}>
-			<Route path=":mangaName"
-			<Route path="/manga/:mangaName/:chapter" component={Chapter} />
-		</Route>
+		<Route path="/manga/:mangaName" component={Manga} />
+		<Route path="/manga/:mangaName/:chapter" component={Chapter} />
 	</Router>
 	</MuiThemeProvider>
 );
