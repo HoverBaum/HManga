@@ -5,8 +5,9 @@ function startServer() {
     var app = express();
 
 	app.get('/API/allMangas', function(req, res) {
-		var list = generateMangaList();
-		res.status(200).json(list).end();
+		generateMangaList(function(list) {
+			res.status(200).json(list).end();
+		});
 	});
 
     app.get('api/manga/:manga', function(req, res) {
